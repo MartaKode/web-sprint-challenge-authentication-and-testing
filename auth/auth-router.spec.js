@@ -4,9 +4,14 @@ const server  = require('../api/server')
 
 const db = require('../database/dbConfig')
 
+const bcryptjs = require('bcryptjs')
+
 describe('auth-router', () => {
     beforeEach(async () => {
+
+        
         await db('users').truncate()
+        // await db('users').insert({username: 'frania', password: 'frania'})
     })
 
     describe('POST /api/auth/register', () => {
@@ -51,7 +56,16 @@ describe('auth-router', () => {
     })
 
     describe('POST api/auth/login', () => {
-   
+        beforeEach(async () => {
+            const user = { username: 'frania', password: 'frania'}
+
+            const hash = bcryptjs.hashSync(user.password, 12)
+
+            user.password = hash
+
+            await db('users').truncate()
+            await db('users').insert(user)
+        })
         it('should respond with status 201 OK', () => {
             return supertest(server)
             .post('/api/auth/register')
@@ -105,7 +119,19 @@ describe('auth-router', () => {
                 })
         })
 
+        it('should respond with status 201 OK', () => {
+        
+            return supertest(server)
+            .post('/api/auth/login')
+            .send({username: 'frania', password: 'frania'})
+            .then(res => {
+                expect(res.status).toBe(201)
+            })
+        })
+
     })
+
+
 
 
 })

@@ -13,11 +13,7 @@ module.exports = {
 testing: {
   client: "sqlite3",
   connection: {
-    filename: "./datatabase/test.db3",
-  },
-  pool: {
-    min: 2,
-    max: 10
+    filename: "./database/test.db3",
   },
   useNullAsDefault: true,
   migrations: {

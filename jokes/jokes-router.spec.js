@@ -5,8 +5,18 @@ const server = require('../api/server')
 const db = require('../database/dbConfig')
 
 describe('jokes-router', () => {
+    let token
     beforeEach(async () => {
+       
+        await supertest(server)
+        .post('/api/auth/register')
+        .send({username: 'marcia', password: 'marcia'})
+       .then( res => {
+           token = res.body.token
+       })
+    
         await db('users').truncate()
+        //generate a token here/ register here 
     })
 
     describe('GET /api/jokes', () => {
@@ -53,6 +63,15 @@ describe('jokes-router', () => {
                     expect(res.body).toHaveLength(20)
                 })
             })
+        })
+
+        it('should respond with an array of 20 jokes when logged in', () => {
+                return supertest(server)
+                .get('/api/jokes')
+                .set({Authorization: token})
+                .then(res => {
+                    expect(res.body).toHaveLength(20)
+                })
         })
 
     })
